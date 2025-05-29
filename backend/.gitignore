@@ -1,0 +1,26 @@
+# Node modules
+node_modules/
+
+# Archivos de entorno
+.env
+.env.*
+
+# Configuración de IDEs
+.vscode/
+.idea/
+
+# Archivos temporales y del sistema
+*.tmp
+.DS_Store
+
+# Archivos de logs
+logs/
+*.log
+
+# Archivos de bases de datos locales
+*.sqlite
+*.db
+
+# Archivos de compilación o build (si llegas a usarlos)
+dist/
+build/
