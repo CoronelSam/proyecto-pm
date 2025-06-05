@@ -23,7 +23,18 @@ module.exports = {
       phone: {
         type: Sequelize.STRING
       },
+      role: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        defaultValue: 'user'
+      },
       created_at: {
+        allowNull: false,
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+      },
+      updated_at: {
+        allowNull: false,
         type: Sequelize.DATE,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       }

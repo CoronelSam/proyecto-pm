@@ -9,7 +9,16 @@ module.exports = {
       image_url: { type: Sequelize.TEXT },
       category: { type: Sequelize.STRING },
       available: { type: Sequelize.BOOLEAN, defaultValue: true },
-      created_at: { type: Sequelize.DATE, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') }
+      created_at: {
+        allowNull: false,
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+      },
+      updated_at: {
+        allowNull: false,
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+      }
     });
   },
   down: async (queryInterface, Sequelize) => {

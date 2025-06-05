@@ -1,3 +1,11 @@
+const cloudinary = require('cloudinary').v2;
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
 module.exports = {
   "development": {
     "username": process.env.DB_USER,
@@ -20,5 +28,6 @@ module.exports = {
     "database": process.env.PROD_PROD_DATABASE,
     "host": process.env.PROD_DB_HOST,
     "dialect": "mysql"
-  }
-}
+  },
+  cloudinary
+};

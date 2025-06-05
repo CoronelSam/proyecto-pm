@@ -26,8 +26,8 @@ db.sequelize.sync()
     console.error('Error synchronizing database: ', error);
   });
 
-//const indexRoutes = require('./src/routes/index');
-//app.use(indexRoutes);
+const indexRoutes = require('./src/routes/index');
+app.use(indexRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);

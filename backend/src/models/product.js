@@ -10,12 +10,13 @@ module.exports = (sequelize, DataTypes) => {
     created_at: { type: DataTypes.DATE, defaultValue: DataTypes.NOW }
   }, {
     tableName: 'products',
-    timestamps: false
+    timestamps: true,
+    createdAt: 'created_at',
+    updatedAt: 'updated_at'
   });
 
   Product.associate = function(models) {
     Product.hasMany(models.OrderItem, { foreignKey: 'product_id' });
-    //Product.hasMany(models.Review, { foreignKey: 'product_id' });
   };
 
   return Product;
