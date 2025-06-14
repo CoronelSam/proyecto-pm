@@ -1,5 +1,5 @@
-const orderItemRepository = require('../repositories/order_item.repository');
-const { toOrderItemResponse, toOrderItemsResponse } = require('../adapters/order_item.adapter');
+const orderItemRepository = require('../repositories/order_items.repository');
+const { toOrderItemResponse, toOrderItemsResponse } = require('../adapters/order_items.adapter');
 
 const getAllOrderItems = async (req, res) => {
   try {

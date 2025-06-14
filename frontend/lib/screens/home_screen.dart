@@ -4,6 +4,7 @@ import 'package:frontend/utils/app_colors.dart';
 import 'package:frontend/screens/menu_screen.dart';
 import 'package:frontend/screens/order_screen.dart';
 import 'package:frontend/screens/profile_screen.dart';
+import 'package:frontend/screens/login_screen.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -24,6 +25,14 @@ class _MyHomePageState extends State<MyHomePage> {
       _selectedIndex = index;
     });
   }
+
+  void _logout() {
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (context) => const LoginScreen()),
+      (route) => false,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,11 +42,13 @@ class _MyHomePageState extends State<MyHomePage> {
         elevation: 4,
         shadowColor: Colors.black87,
         title: const Text('Home Screen'),
-        leading: IconButton(
-          icon: const Icon(Icons.menu),
-          onPressed: () {
-            // Handle menu button press
-          },
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu),
+            onPressed: () {
+              Scaffold.of(context).openDrawer();
+            },
+          ),
         ),
         actions: [
           IconButton(
@@ -47,6 +58,58 @@ class _MyHomePageState extends State<MyHomePage> {
             },
           ),
         ],
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: AppColors.primaryBackground,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: const [
+                  Text('Usuario', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  Text('usuario@email.com', style: TextStyle(fontSize: 14)),
+                ],
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.person),
+              title: const Text('Ver perfil'),
+              onTap: () {
+                Navigator.pop(context);
+                setState(() {
+                  _selectedIndex = 2;
+                });
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.history),
+              title: const Text('Historial de transacciones'),
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.settings),
+              title: const Text('Configuración'),
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
+            const Divider(),
+            ListTile(
+              leading: const Icon(Icons.logout),
+              title: const Text('Cerrar sesión'),
+              onTap: () {
+                Navigator.pop(context);
+                _logout();
+              },
+            ),
+          ],
+        ),
       ),
       body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavbar(
