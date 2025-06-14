@@ -13,7 +13,7 @@ const validarRegistro = () => [
     .isLength({ min: 6, max: 255 }).withMessage('La contraseña debe tener mínimo 6 caracteres'),
   body('phone')
     .optional()
-    .isLength({ min: 7, max: 20 }).withMessage('El teléfono debe tener entre 7 y 20 caracteres'),
+    .isLength({ min: 8, max: 8 }).withMessage('El teléfono debe tener entre 8 numeros'),
 ];
 
 const validate = (req, res, next) => {
