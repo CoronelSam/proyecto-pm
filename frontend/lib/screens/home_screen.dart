@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/components/app_drawer.dart';
 import 'package:frontend/components/bottom_navbar.dart';
 import 'package:frontend/utils/app_colors.dart';
 import 'package:frontend/screens/menu_screen.dart';
 import 'package:frontend/screens/order_screen.dart';
 import 'package:frontend/screens/profile_screen.dart';
 import 'package:frontend/screens/login_screen.dart';
+import 'package:frontend/utils/user_session.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -32,9 +34,12 @@ class _MyHomePageState extends State<MyHomePage> {
       (route) => false,
     );
   }
-
+// Ejemplo, reemplaza por tu lógica real
   @override
   Widget build(BuildContext context) {
+    final session = UserSession();
+    final String userName = session.userName ?? '';
+    final String userEmail = session.userEmail ?? '';
     return Scaffold(
       backgroundColor: AppColors.primaryBackground, 
       appBar: AppBar(
@@ -59,57 +64,15 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            DrawerHeader(
-              decoration: BoxDecoration(
-                color: AppColors.primaryBackground,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  Text('Usuario', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                  Text('usuario@email.com', style: TextStyle(fontSize: 14)),
-                ],
-              ),
-            ),
-            ListTile(
-              leading: const Icon(Icons.person),
-              title: const Text('Ver perfil'),
-              onTap: () {
-                Navigator.pop(context);
-                setState(() {
-                  _selectedIndex = 2;
-                });
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.history),
-              title: const Text('Historial de transacciones'),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.settings),
-              title: const Text('Configuración'),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-            const Divider(),
-            ListTile(
-              leading: const Icon(Icons.logout),
-              title: const Text('Cerrar sesión'),
-              onTap: () {
-                Navigator.pop(context);
-                _logout();
-              },
-            ),
-          ],
-        ),
+      drawer: AppDrawer(
+        onSelectPage: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
+        onLogout: _logout,
+        userName: userName,
+        userEmail: userEmail,
       ),
       body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavbar(

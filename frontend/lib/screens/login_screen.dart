@@ -3,6 +3,7 @@ import 'package:frontend/screens/home_screen.dart';
 import 'package:frontend/screens/register_screen.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import '../utils/user_session.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -44,6 +45,15 @@ class _LoginScreenState extends State<LoginScreen> {
         });
 
         if (response.statusCode == 200) {
+          final resp = jsonDecode(response.body);
+          // Guarda los datos del usuario en la sesión
+          final user = resp['user'];
+          UserSession()
+            ..userId = user['id']
+            ..userName = user['name']
+            ..userEmail = user['email']
+            ..userPhone = user['phone'];
+
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Inicio de sesión exitoso')),
           );

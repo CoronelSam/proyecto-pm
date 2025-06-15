@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/screens/home_screen.dart';
 import 'package:frontend/screens/login_screen.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -53,7 +52,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             const SnackBar(content: Text('Registro exitoso')),
           );
           Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => const MyHomePage()),
+            MaterialPageRoute(builder: (context) => const LoginScreen()),
             (route) => false,
           );
         } else {
@@ -63,7 +62,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           );
         }
       } catch (e) {
-        if (!mounted) return; // Verifica si el widget sigue montado
+        if (!mounted) return;
         setState(() {
           _isLoading = false;
         });

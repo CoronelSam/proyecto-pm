@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../utils/app_colors.dart';
+import '../utils/text_style.dart';
 
 class MenuScreen extends StatelessWidget {
   const MenuScreen({super.key});
@@ -6,7 +8,7 @@ class MenuScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFFF9F3),
+      backgroundColor: AppColors.scaffoldBackground,
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -17,11 +19,7 @@ class MenuScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Text(
                 "Hola 👋🏻",
-                style: TextStyle(
-                  fontSize: 22,
-                  color: Colors.brown[800],
-                  fontWeight: FontWeight.w600,
-                ),
+                style: AppTextStyle.greeting,
               ),
             ),
 
@@ -48,12 +46,7 @@ class MenuScreen extends StatelessWidget {
               child: const Center(
                 child: Text(
                   "Bienvenidos a Sabores de mi casa",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    letterSpacing: 1.2,
-                  ),
+                  style: AppTextStyle.banner,
                 ),
               ),
             ),
@@ -100,21 +93,21 @@ class MenuScreen extends StatelessWidget {
                   PromoCard(
                     title: "2x1 Frappuccino",
                     description: "Solo este fin de semana",
-                    bgColor: Color(0xFFDAC0A3),
+                    bgColor: AppColors.promo1,
                     emoji: "🥤",
                   ),
                   SizedBox(height: 16),
                   PromoCard(
                     title: "Combo Café + Galleta",
                     description: "Por solo \$3.50",
-                    bgColor: Color(0xFFE4C9A1),
+                    bgColor: AppColors.promo2,
                     emoji: "☕🍪",
                   ),
                   SizedBox(height: 16),
                   PromoCard(
                     title: "Descuento en Panini",
                     description: "20% off hasta el viernes",
-                    bgColor: Color(0xFFD8B384),
+                    bgColor: AppColors.promo3,
                     emoji: "🥪",
                   ),
                 ],
@@ -132,11 +125,7 @@ class MenuScreen extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Text(
         text,
-        style: const TextStyle(
-          fontSize: 22,
-          fontWeight: FontWeight.bold,
-          color: Color(0xFF5D4037),
-        ),
+        style: AppTextStyle.sectionTitle,
       ),
     );
   }
@@ -160,7 +149,7 @@ class ProductCard extends StatelessWidget {
       width: 150,
       margin: const EdgeInsets.only(right: 14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.productCard,
         borderRadius: BorderRadius.circular(18),
         boxShadow: const [
           BoxShadow(
@@ -189,17 +178,9 @@ class ProductCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    )),
+                Text(title, style: AppTextStyle.productTitle),
                 const SizedBox(height: 6),
-                Text(price,
-                    style: TextStyle(
-                      color: Colors.brown[600],
-                      fontSize: 14,
-                    )),
+                Text(price, style: AppTextStyle.productPrice),
               ],
             ),
           ),
@@ -249,16 +230,9 @@ class PromoCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    )),
+                Text(title, style: AppTextStyle.promoTitle),
                 const SizedBox(height: 6),
-                Text(
-                  description,
-                  style: const TextStyle(fontSize: 14, color: Colors.black87),
-                ),
+                Text(description, style: AppTextStyle.promoDesc),
               ],
             ),
           )
