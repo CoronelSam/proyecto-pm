@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:frontend/components/app_drawer.dart';
 import 'package:frontend/components/bottom_navbar.dart';
 import 'package:frontend/utils/app_colors.dart';
-import 'package:frontend/screens/menu_screen.dart';
-import 'package:frontend/screens/order_screen.dart';
-import 'package:frontend/screens/profile_screen.dart';
-import 'package:frontend/screens/login_screen.dart';
+import 'package:frontend/screens/user/menu_screen.dart';
+import 'package:frontend/screens/user/order_screen.dart';
+import 'package:frontend/screens/user/profile_screen.dart';
+import 'package:frontend/screens/user/login_screen.dart';
 import 'package:frontend/utils/user_session.dart';
 
 class MyHomePage extends StatefulWidget {

@@ -1,37 +1,33 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/screens/login_screen.dart';
+import 'package:frontend/screens/user/register_screen.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import '../../utils/user_session.dart';
 
-
-class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key});
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
 
   @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _phoneController = TextEditingController();
 
   bool _isLoading = false;
 
-  Future<void> _register() async {
+  Future<void> _login() async {
     if (_formKey.currentState!.validate()) {
       setState(() {
         _isLoading = true;
       });
 
-      final url = Uri.parse('http://localhost:3001/api/v1/users');
+      final url = Uri.parse('http://localhost:3001/api/v1/users/login');
       final body = {
-        'name': _nameController.text.trim(),
         'email': _emailController.text.trim(),
         'password': _passwordController.text,
-        'phone': _phoneController.text.trim().isEmpty ? null : _phoneController.text.trim(),
       };
 
       try {
@@ -41,24 +37,35 @@ class _RegisterScreenState extends State<RegisterScreen> {
           body: jsonEncode(body),
         );
 
-        if (!mounted) return; // Verifica si el widget sigue montado
+        if (!mounted) return;
 
         setState(() {
           _isLoading = false;
         });
 
-        if (response.statusCode == 201) {
+        if (response.statusCode == 200) {
+          final resp = jsonDecode(response.body);
+          // Guarda los datos del usuario en la sesión
+          final user = resp['user'];
+          UserSession()
+            ..userId = user['id']
+            ..userName = user['name']
+            ..userEmail = user['email']
+            ..userPhone = user['phone']
+            ..userRole = user['role'];
+
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Registro exitoso')),
+            const SnackBar(content: Text('Inicio de sesión exitoso')),
           );
-          Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => const LoginScreen()),
-            (route) => false,
-          );
+          if (user['role'] == 'admin') {
+            Navigator.of(context).pushReplacementNamed('/adminHome');
+          } else {
+            Navigator.of(context).pushReplacementNamed('/userHome');
+          }
         } else {
           final resp = jsonDecode(response.body);
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(resp['error'] ?? 'Error al registrar')),
+            SnackBar(content: Text(resp['error'] ?? 'Error al iniciar sesión')),
           );
         }
       } catch (e) {
@@ -77,7 +84,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Registro'),
+        title: const Text('Iniciar sesión'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -85,23 +92,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
           key: _formKey,
           child: ListView(
             children: [
-              TextFormField(
-                controller: _nameController,
-                decoration: const InputDecoration(
-                  labelText: 'Nombre',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'El nombre es requerido';
-                  }
-                  if (value.length < 2 || value.length > 100) {
-                    return 'El nombre debe tener entre 2 y 100 caracteres';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
               TextFormField(
                 controller: _emailController,
                 decoration: const InputDecoration(
@@ -140,42 +130,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   return null;
                 },
               ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _phoneController,
-                decoration: const InputDecoration(
-                  labelText: 'Teléfono (opcional)',
-                  border: OutlineInputBorder(),
-                ),
-                keyboardType: TextInputType.phone,
-                validator: (value) {
-                  if (value != null && value.isNotEmpty) {
-                    if (value.length < 7 || value.length > 20) {
-                      return 'El teléfono debe tener entre 7 y 20 caracteres';
-                    }
-                  }
-                  return null;
-                },
-              ),
               const SizedBox(height: 24),
               _isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : ElevatedButton(
-                      onPressed: _register,
-                      child: const Text('Registrarse'),
+                      onPressed: _login,
+                      child: const Text('Iniciar sesión'),
                     ),
               const SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text('¿Ya tienes una cuenta?'),
+                  const Text('¿No tienes una cuenta?'),
                   TextButton(
                     onPressed: () {
                       Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(builder: (context) => const LoginScreen()),
+                        MaterialPageRoute(builder: (context) => const RegisterScreen()),
                       );
                     },
-                    child: const Text('Inicia sesión'),
+                    child: const Text('Regístrate'),
                   ),
                 ],
               ),

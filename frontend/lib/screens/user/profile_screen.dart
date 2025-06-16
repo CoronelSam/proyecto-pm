@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import '../utils/app_colors.dart';
-import '../utils/text_style.dart';
-import '../components/profile_info_card.dart';
-import '../utils/user_session.dart';
-import '../services/user_service.dart';
-import '../components/dialog_edit_name.dart';
-import '../components/dialog_edit_phone.dart';
-import '../components/dialog_edit_password.dart';
-import '../components/dialog_edit_email.dart';
+import '../../utils/app_colors.dart';
+import '../../utils/text_style.dart';
+import '../../components/profile_info_card.dart';
+import '../../utils/user_session.dart';
+import '../../services/user_service.dart';
+import '../../components/dialog_edit_name.dart';
+import '../../components/dialog_edit_phone.dart';
+import '../../components/dialog_edit_password.dart';
+import '../../components/dialog_edit_email.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});

@@ -9,11 +9,13 @@ class UserSession {
   String? userName;
   String? userEmail;
   String? userPhone;
+  String? userRole;
 
   void clear() {
     userId = null;
     userName = null;
     userEmail = null;
     userPhone = null;
+    userRole = null;
   }
 }

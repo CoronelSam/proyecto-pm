@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../utils/app_colors.dart';
-import '../utils/text_style.dart';
-import '../components/category_navbar.dart'; // Asegúrate de importar el widget
+import '../../utils/app_colors.dart';
+import '../../utils/text_style.dart';
+import '../../components/category_navbar.dart'; // Asegúrate de importar el widget
 
 class OrderScreen extends StatefulWidget {
   const OrderScreen({super.key});

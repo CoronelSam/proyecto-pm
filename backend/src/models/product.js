@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
     created_at: { type: DataTypes.DATE, defaultValue: DataTypes.NOW }
   }, {
     tableName: 'products',
-    timestamps: true,
+    timestamps: false,
     createdAt: 'created_at',
     updatedAt: 'updated_at'
   });
