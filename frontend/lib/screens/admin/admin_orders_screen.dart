@@ -26,7 +26,6 @@ class AdminOrdersScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Pedidos Realizados')),
       body: ListView.builder(
         itemCount: orders.length,
         itemBuilder: (context, index) {

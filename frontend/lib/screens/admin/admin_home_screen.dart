@@ -5,6 +5,7 @@ import 'package:frontend/utils/app_colors.dart';
 import 'package:frontend/utils/text_style.dart';
 import 'admin_add_product_screen.dart';
 import 'admin_orders_screen.dart';
+import 'admin_products_screen.dart'; // Debes crear esta pantalla
 
 class AdminHomeScreen extends StatefulWidget {
   const AdminHomeScreen({super.key});
@@ -14,6 +15,13 @@ class AdminHomeScreen extends StatefulWidget {
 }
 
 class _AdminHomeScreenState extends State<AdminHomeScreen> {
+  int _selectedIndex = 0;
+
+  final List<Widget> _screens = [
+    AdminOrdersScreen(),
+    AdminProductsScreen(), // Debes crear esta pantalla para listar productos
+  ];
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -40,8 +48,8 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Panel de Administrador',
+        title: Text(
+          _selectedIndex == 0 ? 'Pedidos Realizados' : 'Productos',
           style: AppTextStyle.sectionTitle,
         ),
         backgroundColor: AppColors.primaryBackground,
@@ -55,58 +63,32 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
           );
         },
         onViewOrders: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(builder: (_) => const AdminOrdersScreen()),
-          );
+          setState(() => _selectedIndex = 0);
         },
         onLogout: () {
-          // Lógica de logout
           Navigator.of(context).pushReplacementNamed('/login');
         },
       ),
       backgroundColor: AppColors.scaffoldBackground,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton.icon(
-              icon: const Icon(Icons.add_box, color: AppColors.productPrice),
-              label: const Text(
-                'Agregar Producto',
-                style: AppTextStyle.body,
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryBackground,
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                elevation: 0,
-              ),
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const AdminAddProductScreen()),
-                );
-              },
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton.icon(
-              icon: const Icon(Icons.list_alt, color: AppColors.productPrice),
-              label: const Text(
-                'Ver Pedidos Realizados',
-                style: AppTextStyle.body,
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryBackground,
-                foregroundColor: AppColors.productPrice,
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                elevation: 0,
-              ),
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const AdminOrdersScreen()),
-                );
-              },
-            ),
-          ],
-        ),
+      body: _screens[_selectedIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        backgroundColor: AppColors.primaryBackground,
+        selectedItemColor: AppColors.productPrice,
+        unselectedItemColor: AppColors.sectionTitle,
+        onTap: (index) {
+          setState(() => _selectedIndex = index);
+        },
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.list_alt),
+            label: 'Pedidos',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.inventory_2),
+            label: 'Productos',
+          ),
+        ],
       ),
     );
   }

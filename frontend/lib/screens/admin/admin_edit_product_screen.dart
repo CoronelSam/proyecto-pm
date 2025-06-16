@@ -1,27 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 import 'package:frontend/services/cloudinary_service.dart';
 import 'package:frontend/utils/app_colors.dart';
 import 'package:frontend/utils/text_style.dart';
 
-class AdminAddProductScreen extends StatefulWidget {
-  const AdminAddProductScreen({super.key});
+class AdminEditProductScreen extends StatefulWidget {
+  final Map<String, dynamic> product;
+  const AdminEditProductScreen({super.key, required this.product});
 
   @override
-  State<AdminAddProductScreen> createState() => _AdminAddProductScreenState();
+  State<AdminEditProductScreen> createState() => _AdminEditProductScreenState();
 }
 
-class _AdminAddProductScreenState extends State<AdminAddProductScreen> {
+class _AdminEditProductScreenState extends State<AdminEditProductScreen> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _priceController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
+  late TextEditingController _nameController;
+  late TextEditingController _priceController;
+  late TextEditingController _descriptionController;
   String? _selectedType;
   File? _selectedImage;
   bool _available = true;
+  String? _imageUrl;
+  String? _publicId;
+  bool _isLoading = false;
 
   final List<String> _types = [
     'bebidas calientes',
@@ -30,7 +34,24 @@ class _AdminAddProductScreenState extends State<AdminAddProductScreen> {
     'postres',
   ];
 
-  bool _isLoading = false;
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController(text: widget.product['name']);
+    _priceController = TextEditingController(text: widget.product['price'].toString());
+    _descriptionController = TextEditingController(text: widget.product['description'] ?? '');
+    _selectedType = widget.product['category'];
+    _available = widget.product['available'] == true;
+    _imageUrl = widget.product['image_url'];
+    // Extrae el public_id completo de Cloudinary
+    if (_imageUrl != null && _imageUrl!.contains('/')) {
+      final uri = Uri.parse(_imageUrl!);
+      final path = uri.path; // Ejemplo: /sabores_de_mi_casa/bebidas_calientes/imagen123.jpg
+      final publicIdWithExt = path.substring(1); // Quita el primer '/'
+      final publicId = publicIdWithExt.replaceAll(RegExp(r'\.(jpg|jpeg|png|gif|webp)$'), '');
+      _publicId = publicId;
+    }
+  }
 
   Future<void> _pickImage() async {
     final picker = ImagePicker();
@@ -42,23 +63,38 @@ class _AdminAddProductScreenState extends State<AdminAddProductScreen> {
     }
   }
 
+  Future<void> _deleteOldImage() async {
+    if (_publicId == null) return;
+    final url = Uri.parse('http://localhost:3001/api/v1/cloudinary/delete');
+    await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'public_id': _publicId}),
+    );
+  }
+
   Future<void> _saveProduct() async {
-    if (_formKey.currentState!.validate() && _selectedImage != null && _selectedType != null) {
+    if (_formKey.currentState!.validate() && _selectedType != null) {
       setState(() => _isLoading = true);
 
-      final folder = 'sabores_de_mi_casa/${_selectedType!.replaceAll(' ', '_')}';
-      final imageUrl = await CloudinaryService.uploadImageToBackend(_selectedImage!, folder);
-      if (!mounted) return;
-      if (imageUrl == null) {
-        setState(() => _isLoading = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Error al subir imagen')),
-        );
-        return;
+      String? imageUrl = _imageUrl;
+
+      if (_selectedImage != null) {
+        await _deleteOldImage();
+        final folder = 'sabores_de_mi_casa/${_selectedType!.replaceAll(' ', '_')}';
+        imageUrl = await CloudinaryService.uploadImageToBackend(_selectedImage!, folder);
+        if (!mounted) return;
+        if (imageUrl == null) {
+          setState(() => _isLoading = false);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Error al subir imagen')),
+          );
+          return;
+        }
       }
 
-      final url = Uri.parse('http://localhost:3001/api/v1/products');
-      final response = await http.post(
+      final url = Uri.parse('http://localhost:3001/api/v1/products/${widget.product['id']}');
+      final response = await http.put(
         url,
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
@@ -74,23 +110,14 @@ class _AdminAddProductScreenState extends State<AdminAddProductScreen> {
       setState(() => _isLoading = false);
 
       if (!mounted) return;
-      if (response.statusCode == 201) {
+      if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Producto agregado')),
+          const SnackBar(content: Text('Producto actualizado')),
         );
-        _formKey.currentState!.reset();
-        _nameController.clear();
-        _priceController.clear();
-        _descriptionController.clear();
-        setState(() {
-          _selectedImage = null;
-          _selectedType = null;
-          _available = true;
-        });
-        Navigator.of(context).pop();
+        Navigator.of(context).pop(true);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${jsonDecode(response.body)['error'] ?? 'No se pudo agregar'}')),
+          SnackBar(content: Text('Error: ${jsonDecode(response.body)['error'] ?? 'No se pudo actualizar'}')),
         );
       }
     }
@@ -119,9 +146,8 @@ class _AdminAddProductScreenState extends State<AdminAddProductScreen> {
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground,
       appBar: AppBar(
-        title: const Text('Agregar Producto', style: AppTextStyle.sectionTitle),
+        title: const Text('Editar Producto', style: AppTextStyle.sectionTitle),
         backgroundColor: AppColors.primaryBackground,
-        foregroundColor: Colors.black,
         iconTheme: const IconThemeData(color: AppColors.sectionTitle),
         elevation: 0,
       ),
@@ -132,7 +158,7 @@ class _AdminAddProductScreenState extends State<AdminAddProductScreen> {
           child: ListView(
             children: [
               Text(
-                'Nuevo producto',
+                'Editar producto',
                 style: AppTextStyle.title.copyWith(color: AppColors.sectionTitle),
                 textAlign: TextAlign.center,
               ),
@@ -199,7 +225,7 @@ class _AdminAddProductScreenState extends State<AdminAddProductScreen> {
                 ),
                 onPressed: _pickImage,
                 icon: const Icon(Icons.image),
-                label: const Text('Seleccionar imagen', style: AppTextStyle.body),
+                label: const Text('Cambiar imagen', style: AppTextStyle.body),
               ),
               if (_selectedImage != null)
                 Padding(
@@ -207,6 +233,14 @@ class _AdminAddProductScreenState extends State<AdminAddProductScreen> {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(12),
                     child: Image.file(_selectedImage!, height: 120),
+                  ),
+                )
+              else if (_imageUrl != null && _imageUrl!.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 12.0),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.network(_imageUrl!, height: 120),
                   ),
                 ),
               const SizedBox(height: 24),
@@ -224,9 +258,15 @@ class _AdminAddProductScreenState extends State<AdminAddProductScreen> {
                           ),
                         ),
                         onPressed: _saveProduct,
-                        child: const Text('Guardar producto', style: AppTextStyle.sectionTitle),
-                      ),
+                        child: const Text('Guardar cambios',
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ), 
+                      ),   
                     ),
+                  ),
             ],
           ),
         ),
