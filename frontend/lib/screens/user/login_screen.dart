@@ -3,6 +3,8 @@ import 'package:frontend/screens/user/register_screen.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../../utils/user_session.dart';
+import '../../utils/text_style.dart';
+import '../../utils/app_colors.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -83,8 +85,12 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.scaffoldBackground,
       appBar: AppBar(
-        title: const Text('Iniciar sesión'),
+        title: const Text('Iniciar sesión', style: AppTextStyle.title),
+        backgroundColor: AppColors.primaryBackground,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.black),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -92,11 +98,20 @@ class _LoginScreenState extends State<LoginScreen> {
           key: _formKey,
           child: ListView(
             children: [
+              Text(
+                'Bienvenido de nuevo',
+                style: AppTextStyle.greeting,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
               TextFormField(
                 controller: _emailController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Correo electrónico',
-                  border: OutlineInputBorder(),
+                  labelStyle: AppTextStyle.body,
+                  border: const OutlineInputBorder(),
+                  filled: true,
+                  fillColor: AppColors.primaryBackground,
                 ),
                 keyboardType: TextInputType.emailAddress,
                 validator: (value) {
@@ -115,9 +130,12 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 16),
               TextFormField(
                 controller: _passwordController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Contraseña',
-                  border: OutlineInputBorder(),
+                  labelStyle: AppTextStyle.body,
+                  border: const OutlineInputBorder(),
+                  filled: true,
+                  fillColor: AppColors.primaryBackground,
                 ),
                 obscureText: true,
                 validator: (value) {
@@ -134,6 +152,15 @@ class _LoginScreenState extends State<LoginScreen> {
               _isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.sectionTitle,
+                        foregroundColor: Colors.white,
+                        textStyle: AppTextStyle.banner,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
                       onPressed: _login,
                       child: const Text('Iniciar sesión'),
                     ),
@@ -141,14 +168,18 @@ class _LoginScreenState extends State<LoginScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text('¿No tienes una cuenta?'),
+                  Text('¿No tienes una cuenta?', style: AppTextStyle.body),
                   TextButton(
                     onPressed: () {
                       Navigator.of(context).pushReplacement(
                         MaterialPageRoute(builder: (context) => const RegisterScreen()),
                       );
                     },
-                    child: const Text('Regístrate'),
+                    child: const Text('Regístrate', style: TextStyle(
+                      color: Colors.blueAccent, 
+                      fontSize: 18, 
+                      fontWeight: FontWeight.bold)
+                    ),
                   ),
                 ],
               ),

@@ -208,16 +208,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 const SizedBox(height: 25),
                 Text("Preferencias de notificación", style: AppTextStyle.productPrice),
                 const SizedBox(height: 10),
-                CheckboxListTile(
-                  title: const Text("Mensajes en la bandeja de entrada"),
-                  activeColor: AppColors.greeting,
-                  value: inboxMessages,
-                  onChanged: (value) {
-                    setState(() {
-                      inboxMessages = value!;
-                    });
-                  },
-                ),
+                // CheckboxListTile(
+                //   title: const Text("Mensajes en la bandeja de entrada"),
+                //   activeColor: AppColors.greeting,
+                //   value: inboxMessages,
+                //   onChanged: (value) {
+                //     setState(() {
+                //       inboxMessages = value!;
+                //     });
+                //   },
+                // ),
                 CheckboxListTile(
                   title: const Text("Notificaciones de órdenes"),
                   activeColor: AppColors.greeting,

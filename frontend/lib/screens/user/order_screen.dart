@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import '../../utils/app_colors.dart';
 import '../../utils/text_style.dart';
-import '../../components/category_navbar.dart'; // Asegúrate de importar el widget
+import '../../components/category_navbar.dart';
 
 class OrderScreen extends StatefulWidget {
   const OrderScreen({super.key});
@@ -19,6 +21,34 @@ class _OrderScreenState extends State<OrderScreen> {
     'Comida',
     'Postres',
   ];
+
+  List<dynamic> _products = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchProducts();
+  }
+
+  Future<void> _fetchProducts() async {
+    setState(() => _isLoading = true);
+    final response = await http.get(Uri.parse('http://localhost:3001/api/v1/products'));
+    if (response.statusCode == 200) {
+      setState(() {
+        _products = jsonDecode(response.body);
+        _isLoading = false;
+      });
+    } else {
+      setState(() => _isLoading = false);
+      // Manejo de error
+    }
+  }
+
+  List<dynamic> get _filteredProducts {
+    final category = _tabs[_selectedIndex].toLowerCase();
+    return _products.where((p) => (p['category'] ?? '').toLowerCase() == category).toList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,12 +70,64 @@ class _OrderScreenState extends State<OrderScreen> {
             },
           ),
           Expanded(
-            child: Center(
-              child: Text(
-                _tabs[_selectedIndex],
-                style: AppTextStyle.body,
-              ),
-            ),
+            child: _isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : _filteredProducts.isEmpty
+                    ? Center(child: Text('No hay productos en esta categoría', style: AppTextStyle.body))
+                    : ListView.builder(
+                        itemCount: _filteredProducts.length,
+                        itemBuilder: (context, index) {
+                          final product = _filteredProducts[index];
+                          return Card(
+                            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            elevation: 3,
+                            child: Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: product['image_url'] != null && product['image_url'].toString().isNotEmpty
+                                        ? Image.network(
+                                            product['image_url'],
+                                            width: 80,
+                                            height: 80,
+                                            fit: BoxFit.cover,
+                                            errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image, size: 80),
+                                          )
+                                        : Container(
+                                            width: 80,
+                                            height: 80,
+                                            color: Colors.grey[300],
+                                            child: const Icon(Icons.image, size: 40, color: Colors.white),
+                                          ),
+                                  ),
+                                  const SizedBox(width: 16),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(product['name'] ?? '', style: AppTextStyle.title),
+                                        const SizedBox(height: 8),
+                                        Text(
+                                          product['available'] == true ? 'Disponible' : 'No disponible',
+                                          style: AppTextStyle.body.copyWith(
+                                            color: product['available'] == true ? Colors.green : Colors.red,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
           ),
         ],
       ),

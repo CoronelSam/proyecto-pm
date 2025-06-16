@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:frontend/screens/user/login_screen.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import '../../utils/text_style.dart';
+import '../../utils/app_colors.dart';
 
 
 class RegisterScreen extends StatefulWidget {
@@ -41,8 +43,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           body: jsonEncode(body),
         );
 
-        if (!mounted) return; // Verifica si el widget sigue montado
-
+        if (!mounted) return; 
         setState(() {
           _isLoading = false;
         });
@@ -76,8 +77,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.scaffoldBackground,
       appBar: AppBar(
-        title: const Text('Registro'),
+        title: const Text('Registro', style: AppTextStyle.title),
+        backgroundColor: AppColors.primaryBackground,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.black),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -85,11 +90,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
           key: _formKey,
           child: ListView(
             children: [
+              Text(
+                'Crea tu cuenta',
+                style: AppTextStyle.greeting,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
               TextFormField(
                 controller: _nameController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Nombre',
-                  border: OutlineInputBorder(),
+                  labelStyle: AppTextStyle.body,
+                  border: const OutlineInputBorder(),
+                  filled: true,
+                  fillColor: AppColors.primaryBackground, 
                 ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
@@ -104,9 +118,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
               const SizedBox(height: 16),
               TextFormField(
                 controller: _emailController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Correo electrónico',
-                  border: OutlineInputBorder(),
+                  labelStyle: AppTextStyle.body,
+                  border: const OutlineInputBorder(),
+                  filled: true,
+                  fillColor: AppColors.primaryBackground,
                 ),
                 keyboardType: TextInputType.emailAddress,
                 validator: (value) {
@@ -125,9 +142,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
               const SizedBox(height: 16),
               TextFormField(
                 controller: _passwordController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Contraseña',
-                  border: OutlineInputBorder(),
+                  labelStyle: AppTextStyle.body,
+                  border: const OutlineInputBorder(),
+                  filled: true,
+                  fillColor: AppColors.primaryBackground,
                 ),
                 obscureText: true,
                 validator: (value) {
@@ -143,9 +163,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
               const SizedBox(height: 16),
               TextFormField(
                 controller: _phoneController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Teléfono (opcional)',
-                  border: OutlineInputBorder(),
+                  labelStyle: AppTextStyle.body,
+                  border: const OutlineInputBorder(),
+                  filled: true,
+                  fillColor: AppColors.primaryBackground,
                 ),
                 keyboardType: TextInputType.phone,
                 validator: (value) {
@@ -161,6 +184,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
               _isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.sectionTitle,
+                        foregroundColor: Colors.white,
+                        textStyle: AppTextStyle.banner,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
                       onPressed: _register,
                       child: const Text('Registrarse'),
                     ),
@@ -168,14 +200,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text('¿Ya tienes una cuenta?'),
+                  Text('¿Ya tienes una cuenta?', style: AppTextStyle.body),
                   TextButton(
                     onPressed: () {
                       Navigator.of(context).pushReplacement(
                         MaterialPageRoute(builder: (context) => const LoginScreen()),
                       );
                     },
-                    child: const Text('Inicia sesión'),
+                    child: const Text('Inicia sesión', style: TextStyle(
+                      color: Colors.blueAccent, 
+                      fontSize: 18, 
+                      fontWeight: FontWeight.bold)
+                    ),
                   ),
                 ],
               ),

@@ -184,9 +184,8 @@ class _AdminEditProductScreenState extends State<AdminEditProductScreen> {
               const SizedBox(height: 16),
               TextFormField(
                 controller: _descriptionController,
-                decoration: _inputDecoration('Descripción'),
+                decoration: _inputDecoration('Descripción (opcional)'),
                 style: AppTextStyle.body,
-                validator: (value) => value == null || value.isEmpty ? 'Campo requerido' : null,
                 maxLines: 2,
               ),
               const SizedBox(height: 16),
