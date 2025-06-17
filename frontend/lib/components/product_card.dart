@@ -17,7 +17,7 @@ class ProductCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 150,
+      width: 153,
       margin: const EdgeInsets.only(right: 14),
       decoration: BoxDecoration(
         color: AppColors.productCard,
@@ -38,7 +38,7 @@ class ProductCard extends StatelessWidget {
             child: Image.network(
               image,
               height: 100,
-              width: 150,
+              width: 153,
               fit: BoxFit.cover,
             ),
           ),

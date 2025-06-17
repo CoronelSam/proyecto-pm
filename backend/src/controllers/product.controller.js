@@ -25,6 +25,7 @@ const createProduct = async (req, res) => {
     const product = await productRepository.create(req.body);
     res.status(201).json(toProductResponse(product));
   } catch (error) {
+    console.error('Error creating product:', error);
     res.status(500).json({ error: 'Error al crear el producto' });
   }
 };

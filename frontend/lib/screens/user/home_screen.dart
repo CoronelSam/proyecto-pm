@@ -46,7 +46,6 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: AppColors.primaryBackground,
         elevation: 4,
         shadowColor: Colors.black87,
-        title: const Text('Home Screen'),
         leading: Builder(
           builder: (context) => IconButton(
             icon: const Icon(Icons.menu),

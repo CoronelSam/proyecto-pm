@@ -79,7 +79,22 @@ class _AdminProductsScreenState extends State<AdminProductsScreen> {
                         Text(product['description'], style: AppTextStyle.body),
                       const SizedBox(height: 4),
                       Text('Categoría: ${product['category'] ?? ''}', style: AppTextStyle.body),
-                      Text('Precio: \$${product['price']}', style: AppTextStyle.body.copyWith(color: AppColors.productPrice)),
+                      if (product['sizes'] != null)
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (product['sizes']['pequeño'] != null)
+                              Text('Pequeño: \$${product['sizes']['pequeño']}', style: AppTextStyle.body.copyWith(
+                                color: AppColors.productPrice)
+                              ),
+                            if (product['sizes']['grande'] != null)
+                              Text('Grande: \$${product['sizes']['grande']}', style: AppTextStyle.body.copyWith(
+                                color: AppColors.productPrice)
+                              ),
+                          ],
+                        )
+                      else
+                        Text('Precio: \$${product['price']}', style: AppTextStyle.body.copyWith(color: AppColors.productPrice)),
                       Text(
                         product['available'] == true ? 'Disponible' : 'No disponible',
                         style: AppTextStyle.body.copyWith(

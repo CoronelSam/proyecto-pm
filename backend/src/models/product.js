@@ -6,6 +6,7 @@ module.exports = (sequelize, DataTypes) => {
     price: DataTypes.DECIMAL,
     image_url: DataTypes.TEXT,
     category: DataTypes.STRING,
+    sizes: DataTypes.JSON,
     available: { type: DataTypes.BOOLEAN, defaultValue: true },
     created_at: { type: DataTypes.DATE, defaultValue: DataTypes.NOW }
   }, {

@@ -8,6 +8,7 @@ function toProductResponse(productInstance) {
     price: product.price,
     image_url: product.image_url,
     category: product.category,
+    sizes: product.sizes,
     available: product.available,
     created_at: product.created_at
   };

@@ -20,12 +20,15 @@ class _AdminEditProductScreenState extends State<AdminEditProductScreen> {
   late TextEditingController _nameController;
   late TextEditingController _priceController;
   late TextEditingController _descriptionController;
+  late TextEditingController _smallSizePriceController;
+  late TextEditingController _largeSizePriceController;
   String? _selectedType;
   File? _selectedImage;
   bool _available = true;
   String? _imageUrl;
   String? _publicId;
   bool _isLoading = false;
+  bool _hasSizes = false;
 
   final List<String> _types = [
     'bebidas calientes',
@@ -37,17 +40,31 @@ class _AdminEditProductScreenState extends State<AdminEditProductScreen> {
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController(text: widget.product['name']);
-    _priceController = TextEditingController(text: widget.product['price'].toString());
-    _descriptionController = TextEditingController(text: widget.product['description'] ?? '');
-    _selectedType = widget.product['category'];
-    _available = widget.product['available'] == true;
-    _imageUrl = widget.product['image_url'];
-    // Extrae el public_id completo de Cloudinary
+    final product = widget.product;
+    _nameController = TextEditingController(text: product['name']);
+    _priceController = TextEditingController(
+      text: product['price'] != null ? product['price'].toString() : ''
+    );
+    _descriptionController = TextEditingController(text: product['description'] ?? '');
+    _selectedType = product['category'];
+    _available = product['available'] == true;
+    _imageUrl = product['image_url'];
+    _hasSizes = product['sizes'] != null;
+    _smallSizePriceController = TextEditingController(
+      text: product['sizes'] != null && product['sizes']['pequeño'] != null
+          ? product['sizes']['pequeño'].toString()
+          : ''
+    );
+    _largeSizePriceController = TextEditingController(
+      text: product['sizes'] != null && product['sizes']['grande'] != null
+          ? product['sizes']['grande'].toString()
+          : ''
+    );
+    // extrae el public_id completo de Cloudinary
     if (_imageUrl != null && _imageUrl!.contains('/')) {
       final uri = Uri.parse(_imageUrl!);
-      final path = uri.path; // Ejemplo: /sabores_de_mi_casa/bebidas_calientes/imagen123.jpg
-      final publicIdWithExt = path.substring(1); // Quita el primer '/'
+      final path = uri.path;
+      final publicIdWithExt = path.substring(1);
       final publicId = publicIdWithExt.replaceAll(RegExp(r'\.(jpg|jpeg|png|gif|webp)$'), '');
       _publicId = publicId;
     }
@@ -93,18 +110,34 @@ class _AdminEditProductScreenState extends State<AdminEditProductScreen> {
         }
       }
 
+      Map<String, dynamic>? sizes;
+      if (_hasSizes) {
+        sizes = {};
+        if (_smallSizePriceController.text.isNotEmpty) {
+          sizes['pequeño'] = double.tryParse(_smallSizePriceController.text);
+        }
+        if (_largeSizePriceController.text.isNotEmpty) {
+          sizes['grande'] = double.tryParse(_largeSizePriceController.text);
+        }
+      }
+
+      final body = {
+        'name': _nameController.text,
+        'description': _descriptionController.text,
+        'image_url': imageUrl,
+        'category': _selectedType,
+        'available': _available,
+        'sizes': _hasSizes ? sizes : null,
+      };
+      if (!_hasSizes) {
+        body['price'] = _priceController.text;
+      }
+
       final url = Uri.parse('http://localhost:3001/api/v1/products/${widget.product['id']}');
       final response = await http.put(
         url,
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'name': _nameController.text,
-          'price': _priceController.text,
-          'description': _descriptionController.text,
-          'image_url': imageUrl,
-          'category': _selectedType,
-          'available': _available,
-        }),
+        body: jsonEncode(body),
       );
 
       setState(() => _isLoading = false);
@@ -157,11 +190,6 @@ class _AdminEditProductScreenState extends State<AdminEditProductScreen> {
           key: _formKey,
           child: ListView(
             children: [
-              Text(
-                'Editar producto',
-                style: AppTextStyle.title.copyWith(color: AppColors.sectionTitle),
-                textAlign: TextAlign.center,
-              ),
               const SizedBox(height: 24),
               DropdownButtonFormField<String>(
                 value: _selectedType,
@@ -189,13 +217,51 @@ class _AdminEditProductScreenState extends State<AdminEditProductScreen> {
                 maxLines: 2,
               ),
               const SizedBox(height: 16),
-              TextFormField(
-                controller: _priceController,
-                decoration: _inputDecoration('Precio'),
-                style: AppTextStyle.body,
-                keyboardType: TextInputType.number,
-                validator: (value) => value == null || value.isEmpty ? 'Campo requerido' : null,
+              SwitchListTile(
+                activeColor: AppColors.productPrice,
+                inactiveThumbColor: AppColors.sectionTitle,
+                title: Text('¿Editar tamaños?', style: AppTextStyle.body),
+                value: _hasSizes,
+                onChanged: (val) {
+                  setState(() => _hasSizes = val);
+                },
               ),
+              if (_hasSizes) ...[
+                const SizedBox(height: 8),
+                TextFormField(
+                  controller: _smallSizePriceController,
+                  decoration: _inputDecoration('Precio Pequeño'),
+                  style: AppTextStyle.body,
+                  keyboardType: TextInputType.number,
+                  validator: (value) {
+                    if (_hasSizes && (value == null || value.isEmpty)) {
+                      return 'Ingrese el precio para tamaño pequeño';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 8),
+                TextFormField(
+                  controller: _largeSizePriceController,
+                  decoration: _inputDecoration('Precio Grande'),
+                  style: AppTextStyle.body,
+                  keyboardType: TextInputType.number,
+                  validator: (value) {
+                    if (_hasSizes && (value == null || value.isEmpty)) {
+                      return 'Ingrese el precio para tamaño grande';
+                    }
+                    return null;
+                  },
+                ),
+              ] else ...[
+                TextFormField(
+                  controller: _priceController,
+                  decoration: _inputDecoration('Precio'),
+                  style: AppTextStyle.body,
+                  keyboardType: TextInputType.number,
+                  validator: (value) => value == null || value.isEmpty ? 'Campo requerido' : null,
+                ),
+              ],
               const SizedBox(height: 16),
               Row(
                 children: [
@@ -262,8 +328,8 @@ class _AdminEditProductScreenState extends State<AdminEditProductScreen> {
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
                           color: Colors.black,
-                        ), 
-                      ),   
+                        ),
+                      ),
                     ),
                   ),
             ],

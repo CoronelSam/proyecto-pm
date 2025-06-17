@@ -22,6 +22,9 @@ class _AdminAddProductScreenState extends State<AdminAddProductScreen> {
   String? _selectedType;
   File? _selectedImage;
   bool _available = true;
+  bool _hasSizes = false;
+  final TextEditingController _smallSizePriceController = TextEditingController();
+  final TextEditingController _largeSizePriceController = TextEditingController();
 
   final List<String> _types = [
     'bebidas calientes',
@@ -57,18 +60,34 @@ class _AdminAddProductScreenState extends State<AdminAddProductScreen> {
         return;
       }
 
+      Map<String, dynamic>? sizes;
+      if (_hasSizes) {
+        sizes = {};
+        if (_smallSizePriceController.text.isNotEmpty) {
+          sizes['pequeño'] = double.tryParse(_smallSizePriceController.text);
+        }
+        if (_largeSizePriceController.text.isNotEmpty) {
+          sizes['grande'] = double.tryParse(_largeSizePriceController.text);
+        }
+      }
+
+      final body = {
+        'name': _nameController.text,
+        'description': _descriptionController.text,
+        'image_url': imageUrl,
+        'category': _selectedType,
+        'available': _available,
+        'sizes': sizes,
+      };
+      if (!_hasSizes) {
+        body['price'] = _priceController.text;
+      }
+
       final url = Uri.parse('http://localhost:3001/api/v1/products');
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'name': _nameController.text,
-          'price': _priceController.text,
-          'description': _descriptionController.text,
-          'image_url': imageUrl,
-          'category': _selectedType,
-          'available': _available,
-        }),
+        body: jsonEncode(body),
       );
 
       setState(() => _isLoading = false);
@@ -82,10 +101,13 @@ class _AdminAddProductScreenState extends State<AdminAddProductScreen> {
         _nameController.clear();
         _priceController.clear();
         _descriptionController.clear();
+        _smallSizePriceController.clear();
+        _largeSizePriceController.clear();
         setState(() {
           _selectedImage = null;
           _selectedType = null;
           _available = true;
+          _hasSizes = false;
         });
         Navigator.of(context).pop();
       } else {
@@ -131,11 +153,6 @@ class _AdminAddProductScreenState extends State<AdminAddProductScreen> {
           key: _formKey,
           child: ListView(
             children: [
-              Text(
-                'Nuevo producto',
-                style: AppTextStyle.title.copyWith(color: AppColors.sectionTitle),
-                textAlign: TextAlign.center,
-              ),
               const SizedBox(height: 24),
               DropdownButtonFormField<String>(
                 value: _selectedType,
@@ -168,7 +185,7 @@ class _AdminAddProductScreenState extends State<AdminAddProductScreen> {
                 decoration: _inputDecoration('Precio'),
                 style: AppTextStyle.body,
                 keyboardType: TextInputType.number,
-                validator: (value) => value == null || value.isEmpty ? 'Campo requerido' : null,
+                //validator: (value) => value == null || value.isEmpty ? 'Campo requerido' : null,
               ),
               const SizedBox(height: 16),
               Row(
@@ -208,6 +225,44 @@ class _AdminAddProductScreenState extends State<AdminAddProductScreen> {
                     child: Image.file(_selectedImage!, height: 120),
                   ),
                 ),
+              const SizedBox(height: 16),
+              SwitchListTile(
+                activeColor: AppColors.productPrice,
+                inactiveThumbColor: AppColors.sectionTitle,
+                title: Text('¿Agregar tamaños?'),
+                value: _hasSizes,
+                onChanged: (val) {
+                  setState(() => _hasSizes = val);
+                },
+              ),
+              if (_hasSizes) ...[
+                const SizedBox(height: 8),
+                TextFormField(
+                  controller: _smallSizePriceController,
+                  decoration: _inputDecoration('Precio Pequeño'),
+                  style: AppTextStyle.body,
+                  keyboardType: TextInputType.number,
+                  validator: (value) {
+                    if (_hasSizes && (value == null || value.isEmpty)) {
+                      return 'Ingrese el precio para tamaño pequeño';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 8),
+                TextFormField(
+                  controller: _largeSizePriceController,
+                  decoration: _inputDecoration('Precio Grande'),
+                  style: AppTextStyle.body,
+                  keyboardType: TextInputType.number,
+                  validator: (value) {
+                    if (_hasSizes && (value == null || value.isEmpty)) {
+                      return 'Ingrese el precio para tamaño grande';
+                    }
+                    return null;
+                  },
+                ),
+              ],
               const SizedBox(height: 24),
               _isLoading
                   ? const Center(child: CircularProgressIndicator())
@@ -223,7 +278,12 @@ class _AdminAddProductScreenState extends State<AdminAddProductScreen> {
                           ),
                         ),
                         onPressed: _saveProduct,
-                        child: const Text('Guardar producto', style: AppTextStyle.sectionTitle),
+                        child: const Text('Guardar producto', style: TextStyle(
+                          fontSize: 22, 
+                          fontWeight: FontWeight.bold, 
+                          color: Colors.black,
+                          )
+                        ),
                       ),
                     ),
             ],

@@ -18,7 +18,7 @@ class _OrderScreenState extends State<OrderScreen> {
   final List<String> _tabs = [
     'Bebidas Calientes',
     'Bebidas Heladas',
-    'Comida',
+    'Comidas',
     'Postres',
   ];
 
@@ -41,7 +41,6 @@ class _OrderScreenState extends State<OrderScreen> {
       });
     } else {
       setState(() => _isLoading = false);
-      // Manejo de error
     }
   }
 
@@ -113,6 +112,35 @@ class _OrderScreenState extends State<OrderScreen> {
                                       children: [
                                         Text(product['name'] ?? '', style: AppTextStyle.title),
                                         const SizedBox(height: 8),
+                                        Builder(
+                                          builder: (_) {
+                                            dynamic sizes = product['sizes'];
+                                            if (sizes is String && sizes.isNotEmpty) {
+                                              try {
+                                                sizes = jsonDecode(sizes);
+                                              } catch (_) {
+                                                sizes = null;
+                                              }
+                                            }
+                                            if (sizes != null && sizes is Map) {
+                                              final tienePequeno = sizes['pequeño'] != null;
+                                              final tieneGrande = sizes['grande'] != null;
+                                              if (tienePequeno || tieneGrande) {
+                                                return Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    if (tienePequeno)
+                                                      Text('Pequeño: \$${sizes['pequeño']}', style: AppTextStyle.body.copyWith(color: AppColors.productPrice)),
+                                                    if (tieneGrande)
+                                                      Text('Grande: \$${sizes['grande']}', style: AppTextStyle.body.copyWith(color: AppColors.productPrice)),
+                                                  ],
+                                                );
+                                              }
+                                            }
+                                            return Text('Precio: \$${product['price']}', style: AppTextStyle.body.copyWith(color: AppColors.productPrice));
+                                          },
+                                        ),
+                                        const SizedBox(height: 4),
                                         Text(
                                           product['available'] == true ? 'Disponible' : 'No disponible',
                                           style: AppTextStyle.body.copyWith(

@@ -101,8 +101,6 @@ class _MenuScreenState extends State<MenuScreen> {
 
             const SizedBox(height: 30),
             sectionTitle("🆕 Productos Nuevos"),
-
-            // Productos nuevos dinámicos
             const SizedBox(height: 12),
             SizedBox(
               height: 210,
@@ -119,7 +117,7 @@ class _MenuScreenState extends State<MenuScreen> {
                             return ProductCard(
                               image: product.image,
                               title: product.title,
-                              price: "\$${product.price.toStringAsFixed(2)}",
+                              price: product.priceText,
                             );
                           },
                         ),
