@@ -4,7 +4,8 @@ module.exports = (sequelize, DataTypes) => {
     order_id: DataTypes.INTEGER,
     product_id: DataTypes.INTEGER,
     quantity: DataTypes.INTEGER,
-    subtotal: DataTypes.DECIMAL
+    subtotal: DataTypes.DECIMAL,
+    size: DataTypes.STRING
   }, {
     tableName: 'order_items',
     timestamps: false

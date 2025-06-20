@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/utils/app_colors.dart';
 
 class BottomNavbar extends StatelessWidget {
   final int currentIndex;
@@ -13,6 +14,7 @@ class BottomNavbar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
+      backgroundColor: AppColors.primaryBackground,
       currentIndex: currentIndex,
       selectedItemColor: Colors.blue,
       onTap: onTap,

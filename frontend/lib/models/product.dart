@@ -58,4 +58,15 @@ class Product {
     }
     return price != null ? "\$${price!.toStringAsFixed(2)}" : "Sin precio";
   }
+
+  get id => null;
+
+  Map<String, dynamic> toJson() => {
+        'name': title,
+        'image_url': image,
+        'price': price,
+        'sizes': sizes,
+        'available': isNew,
+        'created_at': createdAt.toIso8601String(),
+      };
 }

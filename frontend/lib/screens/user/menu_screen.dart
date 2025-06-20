@@ -5,8 +5,8 @@ import '../../utils/app_colors.dart';
 import '../../utils/text_style.dart';
 import '../../models/product.dart';
 import '../../components/product_card.dart';
-import '../../components/promo_card.dart';
 import '../../utils/user_session.dart';
+import 'package:frontend/screens/user/product_order_screen.dart';
 
 class MenuScreen extends StatefulWidget {
   const MenuScreen({super.key});
@@ -17,14 +17,17 @@ class MenuScreen extends StatefulWidget {
 
 class _MenuScreenState extends State<MenuScreen> {
   List<Product> allProducts = [];
+  List<Product> favoriteProducts = [];
   bool isLoading = true;
+  bool isLoadingFavorites = true;
   late String userName;
 
   @override
   void initState() {
     super.initState();
-    fetchProducts();
     userName = UserSession().userName ?? "Usuario";
+    fetchProducts();
+    fetchFavorites();
   }
 
   Future<void> fetchProducts() async {
@@ -50,8 +53,50 @@ class _MenuScreenState extends State<MenuScreen> {
     }
   }
 
-  List<Product> get newProducts =>
-      allProducts.where((p) => p.isNew).toList();
+  Future<void> fetchFavorites() async {
+    final userId = UserSession().userId;
+    if (userId == null) {
+      setState(() {
+        favoriteProducts = [];
+        isLoadingFavorites = false;
+      });
+      return;
+    }
+    try {
+      final response = await http.get(
+        Uri.parse('http://localhost:3001/api/v1/user-favorites/$userId'),
+      );
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        setState(() {
+          favoriteProducts = data.map((e) => Product.fromJson(e)).toList();
+          isLoadingFavorites = false;
+        });
+      } else {
+        setState(() {
+          favoriteProducts = [];
+          isLoadingFavorites = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        favoriteProducts = [];
+        isLoadingFavorites = false;
+      });
+    }
+  }
+
+  List<Product> get newProducts => allProducts.where((p) => p.isNew).toList();
+  Future<void> navigateToProductOrderScreen(dynamic product) async {
+    final updated = await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => ProductOrderScreen(product: product.toJson()),
+      ),
+    );
+    if (updated == true) {
+      fetchFavorites();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,91 +116,53 @@ class _MenuScreenState extends State<MenuScreen> {
               ),
             ),
 
-            // Banner de bienvenida
-            const SizedBox(height: 10),
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 20),
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.brown.shade300, Colors.brown.shade100],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Colors.black26,
-                    blurRadius: 8,
-                    offset: Offset(0, 4),
-                  )
-                ],
-              ),
-              child: const Center(
-                child: Text(
-                  "Bienvenido a Sabores de mi casa",
-                  style: AppTextStyle.banner,
-                ),
-              ),
-            ),
-
             const SizedBox(height: 30),
             sectionTitle("🆕 Productos Nuevos"),
             const SizedBox(height: 12),
-            SizedBox(
-              height: 210,
-              child: isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : newProducts.isEmpty
-                      ? const Center(child: Text("No hay productos nuevos"))
-                      : ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          padding: const EdgeInsets.only(left: 20),
-                          itemCount: newProducts.length,
-                          itemBuilder: (context, index) {
-                            final product = newProducts[index];
-                            return ProductCard(
-                              image: product.image,
-                              title: product.title,
-                              price: product.priceText,
-                            );
-                          },
-                        ),
-            ),
+            isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : newProducts.isEmpty
+                    ? const Center(child: Text("No hay productos nuevos"))
+                    : ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        itemCount: newProducts.length,
+                        itemBuilder: (context, index) {
+                          final product = newProducts[index];
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 8.0),
+                            child: GestureDetector(
+                              onTap: () => navigateToProductOrderScreen(product),
+                              child: ProductCard(product: product.toJson()),
+                            ),
+                          );
+                        },
+                      ),
 
             const SizedBox(height: 30),
-            sectionTitle("🎉 Promociones"),
-
-            // Promociones
+            sectionTitle("⭐ Favoritos"),
             const SizedBox(height: 12),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                children: const [
-                  PromoCard(
-                    title: "2x1 Frappuccino",
-                    description: "Solo este fin de semana",
-                    bgColor: AppColors.promo1,
-                    emoji: "🥤",
-                  ),
-                  SizedBox(height: 16),
-                  PromoCard(
-                    title: "Combo Café + Galleta",
-                    description: "Por solo \$3.50",
-                    bgColor: AppColors.promo2,
-                    emoji: "☕🍪",
-                  ),
-                  SizedBox(height: 16),
-                  PromoCard(
-                    title: "Descuento en Panini",
-                    description: "20% off hasta el viernes",
-                    bgColor: AppColors.promo3,
-                    emoji: "🥪",
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 40),
+            isLoadingFavorites
+                ? const Center(child: CircularProgressIndicator())
+                : favoriteProducts.isEmpty
+                    ? const Center(child: Text("No tienes productos favoritos"))
+                    : ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        itemCount: favoriteProducts.length,
+                        itemBuilder: (context, index) {
+                          final product = favoriteProducts[index];
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 8.0),
+                            child: GestureDetector(
+                              onTap: () => navigateToProductOrderScreen(product),
+                              child: ProductCard(product: product.toJson()),
+                            ),
+                          );
+                        },
+                      ),
           ],
         ),
       ),

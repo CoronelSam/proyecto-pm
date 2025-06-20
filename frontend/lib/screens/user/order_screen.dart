@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import '../../utils/app_colors.dart';
 import '../../utils/text_style.dart';
 import '../../components/category_navbar.dart';
+import '../../components/product_card.dart';
 
 class OrderScreen extends StatefulWidget {
   const OrderScreen({super.key});
@@ -52,7 +53,7 @@ class _OrderScreenState extends State<OrderScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.primaryBackground,
+      backgroundColor: AppColors.scaffoldBackground,
       appBar: AppBar(
         backgroundColor: AppColors.primaryBackground,
         elevation: 0,
@@ -77,83 +78,7 @@ class _OrderScreenState extends State<OrderScreen> {
                         itemCount: _filteredProducts.length,
                         itemBuilder: (context, index) {
                           final product = _filteredProducts[index];
-                          return Card(
-                            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            elevation: 3,
-                            child: Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(12),
-                                    child: product['image_url'] != null && product['image_url'].toString().isNotEmpty
-                                        ? Image.network(
-                                            product['image_url'],
-                                            width: 80,
-                                            height: 80,
-                                            fit: BoxFit.cover,
-                                            errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image, size: 80),
-                                          )
-                                        : Container(
-                                            width: 80,
-                                            height: 80,
-                                            color: Colors.grey[300],
-                                            child: const Icon(Icons.image, size: 40, color: Colors.white),
-                                          ),
-                                  ),
-                                  const SizedBox(width: 16),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(product['name'] ?? '', style: AppTextStyle.title),
-                                        const SizedBox(height: 8),
-                                        Builder(
-                                          builder: (_) {
-                                            dynamic sizes = product['sizes'];
-                                            if (sizes is String && sizes.isNotEmpty) {
-                                              try {
-                                                sizes = jsonDecode(sizes);
-                                              } catch (_) {
-                                                sizes = null;
-                                              }
-                                            }
-                                            if (sizes != null && sizes is Map) {
-                                              final tienePequeno = sizes['pequeño'] != null;
-                                              final tieneGrande = sizes['grande'] != null;
-                                              if (tienePequeno || tieneGrande) {
-                                                return Column(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                  children: [
-                                                    if (tienePequeno)
-                                                      Text('Pequeño: \$${sizes['pequeño']}', style: AppTextStyle.body.copyWith(color: AppColors.productPrice)),
-                                                    if (tieneGrande)
-                                                      Text('Grande: \$${sizes['grande']}', style: AppTextStyle.body.copyWith(color: AppColors.productPrice)),
-                                                  ],
-                                                );
-                                              }
-                                            }
-                                            return Text('Precio: \$${product['price']}', style: AppTextStyle.body.copyWith(color: AppColors.productPrice));
-                                          },
-                                        ),
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          product['available'] == true ? 'Disponible' : 'No disponible',
-                                          style: AppTextStyle.body.copyWith(
-                                            color: product['available'] == true ? Colors.green : Colors.red,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
+                          return ProductCard(product: product);
                         },
                       ),
           ),

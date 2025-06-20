@@ -5,6 +5,6 @@ import 'screens/admin/admin_home_screen.dart';
 
 final Map<String, WidgetBuilder> appRoutes = {
   '/login': (context) => const LoginScreen(),
-  '/userHome': (context) => const MyHomePage(),
+  '/userHome': (context) => const HomeScreen(),
   '/adminHome': (context) => const AdminHomeScreen(),
 };

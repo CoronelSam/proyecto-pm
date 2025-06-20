@@ -6,22 +6,26 @@ import 'package:frontend/screens/user/menu_screen.dart';
 import 'package:frontend/screens/user/order_screen.dart';
 import 'package:frontend/screens/user/profile_screen.dart';
 import 'package:frontend/screens/user/login_screen.dart';
+import 'package:frontend/screens/user/cart_screen.dart';
 import 'package:frontend/utils/user_session.dart';
+import 'package:provider/provider.dart';
+import '../../services/cart_provider.dart';
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
   final List<Widget> _pages = [
     MenuScreen(),
     OrderScreen(),
     ProfileScreen(),
   ];
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -34,12 +38,19 @@ class _MyHomePageState extends State<MyHomePage> {
       (route) => false,
     );
   }
-// Ejemplo, reemplaza por tu lógica real
+
   @override
   Widget build(BuildContext context) {
     final session = UserSession();
     final String userName = session.userName ?? '';
     final String userEmail = session.userEmail ?? '';
+
+    final cartProvider = Provider.of<CartProvider>(context);
+    final cartItems = cartProvider.items;
+    int cartCount = cartItems.isNotEmpty
+        ? cartItems.fold(0, (sum, item) => sum + item.quantity)
+        : 0;
+
     return Scaffold(
       backgroundColor: AppColors.primaryBackground, 
       appBar: AppBar(
@@ -55,11 +66,42 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.shopping_bag_outlined),
-            onPressed: () {
-              // Handle search button press
-            },
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.shopping_bag_outlined),
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => const CartScreen()),
+                  );
+                },
+              ),
+              Positioned(
+                right: 6,
+                top: 10,
+                child: Container(
+                  padding: const EdgeInsets.all(2),
+                  decoration: BoxDecoration(
+                    color: Colors.red,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  constraints: const BoxConstraints(
+                    minWidth: 18,
+                    minHeight: 18,
+                  ),
+                  child: Text(
+                    '$cartCount',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
