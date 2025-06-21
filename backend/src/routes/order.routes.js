@@ -11,5 +11,6 @@ router.delete('/:id', orderController.deleteOrder);
 router.patch('/:id/status', orderController.updateOrderStatus);
 router.get('/:id/status', orderController.getOrderStatus);
 router.get('/:id/items', orderController.getOrderWithItems);
+router.get('/user/:userId', orderController.getOrdersByUser);
 
 module.exports = router;

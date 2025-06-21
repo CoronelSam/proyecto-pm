@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../../services/order_service.dart';
+import '../../utils/app_colors.dart';
+import '../../components/admin_order_card.dart';
+import '../../utils/order_utils.dart';
 
 class AdminOrdersScreen extends StatefulWidget {
   const AdminOrdersScreen({super.key});
@@ -10,30 +14,68 @@ class AdminOrdersScreen extends StatefulWidget {
 
 class _AdminOrdersScreenState extends State<AdminOrdersScreen> {
   late Future<List<dynamic>> _ordersFuture;
+  DateTime? _selectedDate;
 
   @override
   void initState() {
     super.initState();
     _ordersFuture = OrderService.fetchAllOrders();
+    _selectedDate = DateTime.now();
   }
 
-  Color _getStatusColor(String status) {
-    switch (status) {
-      case 'Pendiente':
-        return Colors.orange;
-      case 'En preparación':
-        return Colors.blue;
-      case 'Entregado':
-        return Colors.green;
-      default:
-        return Colors.grey;
+  Future<void> _pickDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate ?? DateTime.now(),
+      firstDate: DateTime(2020),
+      lastDate: DateTime.now(),
+      locale: const Locale('es', 'ES'),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(
+              primary: AppColors.sectionTitle,
+              onPrimary: Colors.white,
+              onSurface: AppColors.sectionTitle,
+              surface: AppColors.scaffoldBackground,
+            ),
+            dialogTheme: DialogThemeData(backgroundColor: AppColors.scaffoldBackground),
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (picked != null && picked != _selectedDate) {
+      setState(() {
+        _selectedDate = picked;
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final dateFormat = DateFormat('dd/MM/yyyy', 'es');
     return Scaffold(
-      appBar: AppBar(title: const Text('Órdenes')),
+      backgroundColor: AppColors.scaffoldBackground,
+      appBar: AppBar(
+        backgroundColor: AppColors.sectionTitle,
+        elevation: 0,
+        title: const Text(
+          'Órdenes',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1.2,
+          ),
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.calendar_today, color: Colors.white),
+            onPressed: () => _pickDate(context),
+            tooltip: 'Seleccionar fecha',
+          ),
+        ],
+      ),
       body: FutureBuilder<List<dynamic>>(
         future: _ordersFuture,
         builder: (context, snapshot) {
@@ -41,40 +83,79 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen> {
             return const Center(child: CircularProgressIndicator());
           }
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('No hay órdenes'));
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.inbox, size: 60, color: Colors.grey[400]),
+                  const SizedBox(height: 12),
+                  const Text(
+                    'No hay órdenes registradas',
+                    style: TextStyle(fontSize: 18, color: Colors.grey),
+                  ),
+                ],
+              ),
+            );
           }
           final orders = snapshot.data!;
-          return ListView.builder(
-            itemCount: orders.length,
-            itemBuilder: (context, index) {
-              final order = orders[index];
-              final user = order['User'];
-              final items = order['OrderItems'] as List<dynamic>;
-              return Card(
-                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: ExpansionTile(
-                  title: Text(user != null ? user['name'] ?? 'Cliente' : 'Cliente'),
-                  subtitle: Text('Total: \$${order['total']}'),
-                  trailing: Text(
-                    order['status'] ?? 'Pendiente',
-                    style: TextStyle(
-                      color: _getStatusColor(order['status'] ?? ''),
-                      fontWeight: FontWeight.bold,
-                    ),
+          final selected = _selectedDate ?? DateTime.now();
+          final filteredOrders = orders.where((order) {
+            final createdAt = order['created_at'];
+            if (createdAt == null) return false;
+            final date = DateTime.tryParse(createdAt);
+            if (date == null) return false;
+            return date.year == selected.year && date.month == selected.month && date.day == selected.day;
+          }).toList();
+
+          if (filteredOrders.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.event_busy, size: 60, color: Colors.grey[400]),
+                  const SizedBox(height: 12),
+                  Text(
+                    'No hay órdenes para el ${dateFormat.format(selected)}',
+                    style: const TextStyle(fontSize: 16, color: Colors.grey),
                   ),
-                  children: items.map((item) {
-                    final product = item['Product'];
-                    return ListTile(
-                      title: Text(product != null ? product['name'] : 'Producto eliminado'),
-                      subtitle: Text(
-                        'Cantidad: ${item['quantity']}${item['size'] != null ? '\nTamaño: ${item['size']}' : ''}'
+                ],
+              ),
+            );
+          }
+
+          return Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16),
+                child: Row(
+                  children: [
+                    Icon(Icons.calendar_today, color: AppColors.sectionTitle),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Órdenes para el ${dateFormat.format(selected)}',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.sectionTitle,
+                        fontSize: 18,
                       ),
-                      trailing: Text('\$${item['subtotal']}'),
-                    );
-                  }).toList(),
+                    ),
+                  ],
                 ),
-              );
-            },
+              ),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: filteredOrders.length,
+                  itemBuilder: (context, index) {
+                    return AdminOrderCard(
+                      order: filteredOrders[index],
+                      dateFormat: dateFormat,
+                      getStatusText: getStatusText,
+                      getStatusColor: getStatusColor,
+                    );
+                  },
+                ),
+              ),
+            ],
           );
         },
       ),

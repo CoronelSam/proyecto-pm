@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/screens/user/user_receipts_screen.dart';
 import 'package:frontend/utils/app_colors.dart';
 
 class AppDrawer extends StatelessWidget {
@@ -50,10 +51,15 @@ class AppDrawer extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.history),
-            title: const Text('Historial de transacciones'),
+            leading: const Icon(Icons.receipt_long),
+            title: const Text('Historial de Ordenes'),
             onTap: () {
               Navigator.pop(context);
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => UserReceiptsScreen(),
+                ),
+              );
             },
           ),
           const Divider(),

@@ -49,7 +49,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          _selectedIndex == 0 ? 'Pedidos Realizados' : 'Productos',
+          _selectedIndex == 0 ? 'Ordenes Realizadas' : 'Productos',
           style: AppTextStyle.sectionTitle,
         ),
         backgroundColor: AppColors.primaryBackground,
@@ -82,7 +82,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.list_alt),
-            label: 'Pedidos',
+            label: 'Órdenes',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.inventory_2),

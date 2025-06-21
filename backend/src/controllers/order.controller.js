@@ -136,6 +136,25 @@ const getAllOrdersWithItems = async (req, res) => {
   }
 };
 
+const getOrdersByUser = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const orders = await Order.findAll({
+      where: { user_id: userId },
+      include: [
+        {
+          model: OrderItem,
+          include: [Product]
+        }
+      ],
+      order: [['created_at', 'DESC']]
+    });
+    res.json(orders);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al obtener las órdenes del usuario' });
+  }
+};
+
 module.exports = {
   getAllOrders,
   getOrderById,
@@ -145,5 +164,6 @@ module.exports = {
   updateOrderStatus,
   getOrderStatus,
   getOrderWithItems,
-  getAllOrdersWithItems
+  getAllOrdersWithItems,
+  getOrdersByUser,
 };

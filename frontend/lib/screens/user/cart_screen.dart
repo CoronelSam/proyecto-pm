@@ -10,6 +10,7 @@ import '../../utils/user_session.dart';
 import '../../components/cart_item.dart';
 import '../../components/empty_cart.dart';
 import '../../components/cart_total_section.dart';
+import 'receipt_screen.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
@@ -61,11 +62,26 @@ class _CartScreenState extends State<CartScreen> {
       );
       if (!mounted) return;
       if (response.statusCode == 201) {
+        final order = jsonDecode(response.body);
+        final orderId = order['id'];
+        // Obtener la orden con los productos
+        final orderWithItemsResponse = await http.get(
+          Uri.parse('http://localhost:3001/api/v1/orders/$orderId/items'),
+          headers: {'Content-Type': 'application/json'},
+        );
+        if (orderWithItemsResponse.statusCode == 200) {
+          final orderWithItems = jsonDecode(orderWithItemsResponse.body);
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (_) => ReceiptScreen(order: orderWithItems),
+            ),
+          );
+        }
         cartProvider.clearCart();
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("¡Orden realizada!")),
         );
-        Navigator.of(context).pop();
+        return;
       } else {
         final resp = jsonDecode(response.body);
         ScaffoldMessenger.of(context).showSnackBar(
@@ -99,7 +115,7 @@ class _CartScreenState extends State<CartScreen> {
           if (cartItems.isNotEmpty)
             IconButton(
               icon: const Icon(Icons.delete_outline, color: Colors.red),
-              tooltip: "Vaciar carrito",
+              tooltip: "Vaciar orden",
               onPressed: () async {
                 final confirm = await showDialog<bool>(
                   context: context,
@@ -107,11 +123,11 @@ class _CartScreenState extends State<CartScreen> {
                     backgroundColor: AppColors.scaffoldBackground,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                     title: const Text(
-                      "Vaciar carrito",
+                      "Vaciar orden",
                       style: AppTextStyle.sectionTitle,
                     ),
                     content: const Text(
-                      "¿Estás seguro de que deseas eliminar todos los productos del carrito?",
+                      "¿Estás seguro de que deseas eliminar todos los productos de la orden?",
                       style: AppTextStyle.body,
                     ),
                     actions: [
@@ -132,7 +148,7 @@ class _CartScreenState extends State<CartScreen> {
                 if (confirm == true) {
                   cartProvider.clearCart();
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Carrito vaciado")),
+                    const SnackBar(content: Text("Orden vaciada exitosamente")),
                   );
                 }
               },
@@ -165,7 +181,7 @@ class _CartScreenState extends State<CartScreen> {
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                               title: const Text("Eliminar producto", style: AppTextStyle.sectionTitle),
                               content: const Text(
-                                "¿Eliminar este producto del carrito?",
+                                "¿Eliminar este producto del orden?",
                                 style: AppTextStyle.body,
                               ),
                               actions: [
@@ -186,7 +202,7 @@ class _CartScreenState extends State<CartScreen> {
                           if (confirm == true) {
                             cartProvider.removeItem(cartItems[index]);
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text("Producto eliminado del carrito")),
+                              const SnackBar(content: Text("Producto eliminado de la orden")),
                             );
                           }
                         },
