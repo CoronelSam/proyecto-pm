@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/screens/user/user_receipts_screen.dart';
 import 'package:frontend/utils/app_colors.dart';
+import 'package:frontend/utils/text_style.dart';
 
 class AppDrawer extends StatelessWidget {
   final Function(int) onSelectPage;
@@ -27,10 +28,25 @@ class AppDrawer extends StatelessWidget {
               color: AppColors.primaryBackground,
             ),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(userName, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                Text(userEmail, style: const TextStyle(fontSize: 14)),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: Image.asset(
+                    'assets/images/logo.png',
+                    height: 95,
+                    width: 95,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  userName,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ],
             ),
           ),
@@ -64,8 +80,8 @@ class AppDrawer extends StatelessWidget {
           ),
           const Divider(),
           ListTile(
-            leading: const Icon(Icons.logout),
-            title: const Text('Cerrar sesión'),
+            leading: const Icon(Icons.logout, color: Colors.redAccent),
+            title: const Text('Cerrar sesión', style: AppTextStyle.body),
             onTap: () {
               Navigator.pop(context);
               onLogout();

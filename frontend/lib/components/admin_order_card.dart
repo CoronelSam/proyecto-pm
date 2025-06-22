@@ -6,6 +6,7 @@ class AdminOrderCard extends StatelessWidget {
   final DateFormat dateFormat;
   final String Function(String) getStatusText;
   final Color Function(String) getStatusColor;
+  final void Function(String newStatus)? onStatusChanged;
 
   const AdminOrderCard({
     super.key,
@@ -13,6 +14,7 @@ class AdminOrderCard extends StatelessWidget {
     required this.dateFormat,
     required this.getStatusText,
     required this.getStatusColor,
+    this.onStatusChanged,
   });
 
   @override
@@ -45,12 +47,46 @@ class AdminOrderCard extends StatelessWidget {
               ),
           ],
         ),
-        trailing: Text(
-          getStatusText(status),
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (onStatusChanged != null)
+              DropdownButton<String>(
+                value: status,
+                items: const [
+                  DropdownMenuItem(
+                    value: 'pending',
+                    child: Text('Pendiente'),
+                  ),
+                  DropdownMenuItem(
+                    value: 'en preparacion',
+                    child: Text('En preparación'),
+                  ),
+                  DropdownMenuItem(
+                    value: 'listo',
+                    child: Text('Listo'),
+                  ),
+                ],
+                onChanged: (value) {
+                  if (value != null && value != status) {
+                    onStatusChanged!(value);
+                  }
+                },
+                underline: const SizedBox(),
+                icon: const Icon(Icons.edit, size: 18),
+                selectedItemBuilder: (context) {
+                  return ['pending', 'en preparacion', 'listo'].map((value) {
+                    return Text(
+                      getStatusText(value),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: getStatusColor(value),
+                      ),
+                    );
+                  }).toList();
+                },
+              ),
+          ],
         ),
         children: items.map((item) {
           final product = item['Product'];

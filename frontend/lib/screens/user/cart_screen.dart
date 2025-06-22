@@ -111,6 +111,15 @@ class _CartScreenState extends State<CartScreen> {
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.of(context).pop(),
         ),
+        title: ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: Image.asset(
+            'assets/images/logo.png',
+            height: 36,
+            fit: BoxFit.contain,
+          ),
+        ),
+        centerTitle: true,
         actions: [
           if (cartItems.isNotEmpty)
             IconButton(

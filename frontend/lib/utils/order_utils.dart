@@ -8,8 +8,8 @@ String getStatusText(String status) {
     case 'en preparacion':
     case 'en preparación':
       return 'En preparación';
-    case 'entregado':
-      return 'Entregado';
+    case 'listo':
+      return 'Listo';
     default:
       return 'Desconocido';
   }
@@ -23,7 +23,7 @@ Color getStatusColor(String status) {
     case 'en preparacion':
     case 'en preparación':
       return Colors.blue;
-    case 'entregado':
+    case 'listo':
       return Colors.green;
     default:
       return Colors.grey;

@@ -22,7 +22,8 @@
     "multer": "^2.0.1",
     "multer-storage-cloudinary": "^4.0.0",
     "mysql2": "^3.14.1",
-    "sequelize": "^6.37.7"
+    "sequelize": "^6.37.7",
+    "socket.io": "^4.8.1"
   },
   "devDependencies": {
     "nodemon": "^3.1.10",

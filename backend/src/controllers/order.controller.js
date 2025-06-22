@@ -23,13 +23,10 @@ const getOrderById = async (req, res) => {
 
 const createOrder = async (req, res) => {
   try {
-    // 1. Extrae los items y los datos de la orden del body
     const { items, ...orderData } = req.body;
 
-    // 2. Crea la orden
     const order = await Order.create(orderData);
 
-    // 3. Crea los items de la orden
     if (items && Array.isArray(items)) {
       for (const item of items) {
         await OrderItem.create({
@@ -42,7 +39,7 @@ const createOrder = async (req, res) => {
       }
     }
 
-    res.status(201).json(order); // Puedes adaptar la respuesta si lo deseas
+    res.status(201).json(order);
   } catch (error) {
     res.status(500).json({ error: 'Error al crear la orden' });
   }
@@ -68,7 +65,6 @@ const deleteOrder = async (req, res) => {
   }
 };
 
-// Actualizar solo el estado de la orden
 const updateOrderStatus = async (req, res) => {
   try {
     const { status } = req.body;
@@ -78,6 +74,14 @@ const updateOrderStatus = async (req, res) => {
     }
     const order = await orderRepository.update(orderId, { status });
     if (!order) return res.status(404).json({ error: 'Orden no encontrada' });
+    const io = req.app.get('io');
+    if (io) {
+      io.to(`order_${orderId}`).emit('orderStatusChanged', {
+        orderId,
+        status,
+        updated_at: new Date()
+      });
+    }
     res.json({ message: 'Estado actualizado', order });
   } catch (error) {
     res.status(500).json({ error: 'Error al actualizar el estado de la orden' });

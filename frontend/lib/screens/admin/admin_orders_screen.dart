@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
 import '../../services/order_service.dart';
 import '../../utils/app_colors.dart';
 import '../../components/admin_order_card.dart';
@@ -49,6 +50,25 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen> {
       setState(() {
         _selectedDate = picked;
       });
+    }
+  }
+
+  Future<void> _updateOrderStatus(int orderId, String newStatus) async {
+    final url = Uri.parse('http://localhost:3001/api/v1/orders/$orderId/status');
+    final response = await http.patch(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: '{"status": "$newStatus"}',
+    );
+    if (!mounted) return;
+    if (response.statusCode == 200) {
+      setState(() {
+        _ordersFuture = OrderService.fetchAllOrders();
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al actualizar el estado: ${response.body}')),
+      );
     }
   }
 
@@ -146,11 +166,15 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen> {
                 child: ListView.builder(
                   itemCount: filteredOrders.length,
                   itemBuilder: (context, index) {
+                    final order = filteredOrders[index];
                     return AdminOrderCard(
-                      order: filteredOrders[index],
+                      order: order,
                       dateFormat: dateFormat,
                       getStatusText: getStatusText,
                       getStatusColor: getStatusColor,
+                      onStatusChanged: (newStatus) {
+                        _updateOrderStatus(order['id'], newStatus);
+                      },
                     );
                   },
                 ),

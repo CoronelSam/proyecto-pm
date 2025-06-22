@@ -25,12 +25,23 @@ class AdminDrawer extends StatelessWidget {
               color: AppColors.primaryBackground,
             ),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const SizedBox(height: 20),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: Image.asset(
+                    'assets/images/logo.png',
+                    height: 100,
+                    width: 100,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                const SizedBox(height: 16),
                 Text(
                   'Panel de Administrador',
                   style: AppTextStyle.sectionTitle,
+                  textAlign: TextAlign.center,
                 ),
               ],
             ),

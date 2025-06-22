@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../utils/app_colors.dart';
 import '../../utils/text_style.dart';
-//import 'tracker_order_screen.dart';
+import 'tracker_order_screen.dart';
 
 class ReceiptScreen extends StatelessWidget {
   final Map<String, dynamic> order;
@@ -78,7 +78,7 @@ class ReceiptScreen extends StatelessWidget {
                   final subtotalRaw = item['subtotal'] ?? 0;
                   final subtotal = double.tryParse(subtotalRaw.toString()) ?? 0.0;
                   return ListTile(
-                    leading: const Icon(Icons.shopping_bag, color: AppColors.greeting),
+                    leading: const Icon(Icons.coffee, color: AppColors.greeting),
                     title: Text(name, style: AppTextStyle.body),
                     subtitle: size != null ? Text('Tamaño: $size', style: AppTextStyle.body) : null,
                     trailing: Column(
@@ -152,11 +152,18 @@ class ReceiptScreen extends StatelessWidget {
                   ),
                 ),
                 onPressed: () {
-                  // Navigator.of(context).push(
-                  //   MaterialPageRoute(
-                  //     builder: (_) => TrackerOrderScreen(orderId: orderId),
-                  //   ),
-                  // );
+                  final int? id = int.tryParse(order['id'].toString());
+                  if (id != null) {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => TrackerOrderScreen(orderId: id),
+                      ),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('No se pudo obtener el ID de la orden')),
+                    );
+                  }
                 },
                 label: const Text('Ver estado de la orden', style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold)),
               ),

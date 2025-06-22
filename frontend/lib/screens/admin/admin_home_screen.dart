@@ -5,7 +5,7 @@ import 'package:frontend/utils/app_colors.dart';
 import 'package:frontend/utils/text_style.dart';
 import 'admin_add_product_screen.dart';
 import 'admin_orders_screen.dart';
-import 'admin_products_screen.dart'; // Debes crear esta pantalla
+import 'admin_products_screen.dart';
 
 class AdminHomeScreen extends StatefulWidget {
   const AdminHomeScreen({super.key});
@@ -19,7 +19,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
 
   final List<Widget> _screens = [
     AdminOrdersScreen(),
-    AdminProductsScreen(), // Debes crear esta pantalla para listar productos
+    AdminProductsScreen(),
   ];
 
   @override

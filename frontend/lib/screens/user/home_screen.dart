@@ -65,6 +65,14 @@ class _HomeScreenState extends State<HomeScreen> {
             },
           ),
         ),
+        title: ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: Image.asset(
+            'assets/images/logo.png',
+            height: 36,
+            fit: BoxFit.contain,
+          ),
+        ),
         actions: [
           Stack(
             alignment: Alignment.center,

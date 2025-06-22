@@ -145,11 +145,11 @@ class _ProductOrderScreenState extends State<ProductOrderScreen> {
                     price: getPrice(),
                   );
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Producto agregado al carrito')),
+                    const SnackBar(content: Text('Producto agregado al orden')),
                   );
                   Navigator.of(context).pop();
                 },
-                label: const Text('Agregar al carrito', style: TextStyle(fontSize: 18, color: Colors.black)),
+                label: const Text('Agregar a la orden', style: TextStyle(fontSize: 18, color: Colors.black)),
               ),
             ),
           ],
