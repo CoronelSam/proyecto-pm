@@ -84,17 +84,17 @@ class _AdminProductsScreenState extends State<AdminProductsScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             if (product['sizes']['pequeño'] != null)
-                              Text('Pequeño: \$${product['sizes']['pequeño']}', style: AppTextStyle.body.copyWith(
+                              Text('Pequeño: L${product['sizes']['pequeño']}', style: AppTextStyle.body.copyWith(
                                 color: AppColors.productPrice)
                               ),
                             if (product['sizes']['grande'] != null)
-                              Text('Grande: \$${product['sizes']['grande']}', style: AppTextStyle.body.copyWith(
+                              Text('Grande: L${product['sizes']['grande']}', style: AppTextStyle.body.copyWith(
                                 color: AppColors.productPrice)
                               ),
                           ],
                         )
                       else
-                        Text('Precio: \$${product['price']}', style: AppTextStyle.body.copyWith(color: AppColors.productPrice)),
+                        Text('Precio: L${product['price']}', style: AppTextStyle.body.copyWith(color: AppColors.productPrice)),
                       Text(
                         product['available'] == true ? 'Disponible' : 'No disponible',
                         style: AppTextStyle.body.copyWith(

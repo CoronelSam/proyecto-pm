@@ -74,13 +74,13 @@ class ProductCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           if (sizes['pequeño'] != null)
-                            Text('Pequeño: \$${sizes['pequeño']}', style: AppTextStyle.body.copyWith(color: AppColors.productPrice)),
+                            Text('Pequeño: L${sizes['pequeño']}', style: AppTextStyle.body.copyWith(color: AppColors.productPrice)),
                           if (sizes['grande'] != null)
-                            Text('Grande: \$${sizes['grande']}', style: AppTextStyle.body.copyWith(color: AppColors.productPrice)),
+                            Text('Grande: L${sizes['grande']}', style: AppTextStyle.body.copyWith(color: AppColors.productPrice)),
                         ],
                       )
                     else
-                      Text('Precio: \$${product['price']}', style: AppTextStyle.body.copyWith(color: AppColors.productPrice)),
+                      Text('Precio: L${product['price']}', style: AppTextStyle.body.copyWith(color: AppColors.productPrice)),
                     const SizedBox(height: 4),
                     Text(
                       product['available'] == true ? 'Disponible' : 'No disponible',

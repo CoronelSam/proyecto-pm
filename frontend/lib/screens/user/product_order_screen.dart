@@ -115,7 +115,7 @@ class _ProductOrderScreenState extends State<ProductOrderScreen> {
             ),
             const SizedBox(height: 24),
             Text(
-              'Total: \$${(getPrice() * _quantity).toStringAsFixed(2)}',
+              'Total: L${(getPrice() * _quantity).toStringAsFixed(2)}',
               style: AppTextStyle.productPrice.copyWith(fontSize: 22),
             ),
             const Spacer(),

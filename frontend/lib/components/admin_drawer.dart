@@ -32,8 +32,8 @@ class AdminDrawer extends StatelessWidget {
                   borderRadius: BorderRadius.circular(16),
                   child: Image.asset(
                     'assets/images/logo.png',
-                    height: 100,
-                    width: 100,
+                    height: 85,
+                    width: 85,
                     fit: BoxFit.cover,
                   ),
                 ),

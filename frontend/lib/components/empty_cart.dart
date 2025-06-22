@@ -18,7 +18,7 @@ class EmptyCartWidget extends StatelessWidget {
           children: const [
             Icon(Icons.shopping_bag_outlined, size: 50, color: Colors.grey),
             SizedBox(height: 12),
-            Text("No hay productos en tu carrito", style: TextStyle(fontSize: 16)),
+            Text("No hay productos en tu orden", style: TextStyle(fontSize: 16)),
           ],
         ),
       ),

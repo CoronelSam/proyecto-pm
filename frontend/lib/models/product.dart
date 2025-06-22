@@ -49,14 +49,14 @@ class Product {
       final tienePequeno = sizes!['pequeño'] != null;
       final tieneGrande = sizes!['grande'] != null;
       if (tienePequeno && tieneGrande) {
-        return "Pequeño: \$${sizes!['pequeño']}  Grande: \$${sizes!['grande']}";
+        return "Pequeño: L${sizes!['pequeño']}  Grande: L${sizes!['grande']}";
       } else if (tienePequeno) {
-        return "Pequeño: \$${sizes!['pequeño']}";
+        return "Pequeño: L${sizes!['pequeño']}";
       } else if (tieneGrande) {
-        return "Grande: \$${sizes!['grande']}";
+        return "Grande: L${sizes!['grande']}";
       }
     }
-    return price != null ? "\$${price!.toStringAsFixed(2)}" : "Sin precio";
+    return price != null ? "L${price!.toStringAsFixed(2)}" : "Sin precio";
   }
 
   get id => null;

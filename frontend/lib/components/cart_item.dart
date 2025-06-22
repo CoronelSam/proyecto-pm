@@ -29,7 +29,7 @@ class CartItemTile extends StatelessWidget {
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text("\$${(item.price * item.quantity).toStringAsFixed(2)}"),
+          Text("L${(item.price * item.quantity).toStringAsFixed(2)}"),
           IconButton(
             icon: const Icon(Icons.edit_note, color: Colors.blue),
             tooltip: "Editar este producto",
