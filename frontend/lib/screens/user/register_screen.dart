@@ -90,6 +90,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
           key: _formKey,
           child: ListView(
             children: [
+              const SizedBox(height: 24),
+              Center(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.asset(
+                    'assets/images/logo.png',
+                    height: 90,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
               Text(
                 'Crea tu cuenta',
                 style: AppTextStyle.greeting,
