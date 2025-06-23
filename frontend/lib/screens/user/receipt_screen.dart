@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../../utils/app_colors.dart';
 import '../../utils/text_style.dart';
 import 'tracker_order_screen.dart';
@@ -11,9 +12,9 @@ class ReceiptScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final orderId = order['id']?.toString() ?? '';
     final createdAt = order['created_at'] ?? order['createdAt'] ?? '';
-    final dateTime = DateTime.tryParse(createdAt) ?? DateTime.now();
-    final formattedDate = "${dateTime.day}/${dateTime.month}/${dateTime.year}";
-    final formattedTime = "${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}";
+    final dateTime = DateTime.tryParse(createdAt)?.toLocal() ?? DateTime.now();
+    final formattedDate = DateFormat('dd/MM/yyyy').format(dateTime);
+    final formattedTime = DateFormat('hh:mm a').format(dateTime);
     final items = order['OrderItems'] ?? order['items'] ?? [];
 
     return Scaffold(

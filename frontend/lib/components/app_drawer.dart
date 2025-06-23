@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/screens/user/user_receipts_screen.dart';
 import 'package:frontend/utils/app_colors.dart';
 import 'package:frontend/utils/text_style.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AppDrawer extends StatelessWidget {
   final Function(int) onSelectPage;
@@ -77,6 +78,40 @@ class AppDrawer extends StatelessWidget {
                 ),
               );
             },
+          ),
+          const Divider(),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: Column(
+              children: [
+                const Text(
+                  'Síguenos en:',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.facebook, color: Colors.blue),
+                      onPressed: () {
+                        launchUrl(Uri.parse('https://www.facebook.com/share/1C9xzY81Pi/?mibextid=wwXIfr'));
+                      },
+                    ),
+                    ShaderMask(
+                      shaderCallback: (Rect bounds) {
+                        return AppColors.instagramGradient.createShader(bounds);
+                      },
+                      child: IconButton(
+                        icon: const Icon(Icons.camera_alt, color: Colors.white),
+                        onPressed: () {
+                          launchUrl(Uri.parse('https://www.instagram.com/saboresdemicasa_'));
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
           const Divider(),
           ListTile(

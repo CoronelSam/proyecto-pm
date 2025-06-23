@@ -11,4 +11,14 @@ class AppColors {
   static const Color productPrice = Color(0xFF795548); // brown[600]
   static const Color productTitle = Colors.black;
   static const Color greeting = Color(0xFF6D4C41); // brown[800]
+
+  static const LinearGradient instagramGradient = LinearGradient(
+    colors: [
+      Color(0xFFF58529),
+      Color(0xFFDD2A7B), 
+      Color(0xFF515BD4), 
+    ],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
 }

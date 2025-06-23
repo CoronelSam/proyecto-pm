@@ -122,7 +122,7 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen> {
           final filteredOrders = orders.where((order) {
             final createdAt = order['created_at'];
             if (createdAt == null) return false;
-            final date = DateTime.tryParse(createdAt);
+            final date = DateTime.tryParse(createdAt)?.toLocal();
             if (date == null) return false;
             return date.year == selected.year && date.month == selected.month && date.day == selected.day;
           }).toList();
